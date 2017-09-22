@@ -1,13 +1,9 @@
-OBJS = test.o
 CC = g++
 CXXFLAGS = -std=c++11
 
-target : examples shared_application
+target : test
 
-$(TARGET):$(OBJS) $(HEADERS)
-	@echo TARGET:$@
-	@echo OBJECTS:$^
-	$(CC) -o $@ $(CXXFLAGS) $^
+test : test.o shared_application.hpp
 
 clean:
-	rm -rf $(TARGET) $(OBJS)
+	rm test *.o
