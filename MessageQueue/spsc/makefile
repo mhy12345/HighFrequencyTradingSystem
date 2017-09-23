@@ -16,4 +16,4 @@ target : $(TARGETS)
 %.o : $(HEADERS)
 
 clean : 
-	rm *.o server client
+	rm *.o $(TARGETS)

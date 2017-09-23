@@ -3,9 +3,7 @@
 #include "data.h"
 #include <iostream>
 #include <cstdio>
-#include <random>
 #include <sys/signal.h>
-#include <ctime>
 using namespace std;
 using namespace boost::lockfree;
 SharedApplication sApp;
@@ -25,13 +23,22 @@ int main()
 	sApp.setSize(sizeof(spsc_queue<timeval,capacity<1024> >));//set the default size to fit the queue
 	sApp.start();
 	spsc_queue<timeval,capacity<1024> > *sq = new(sApp.malloc(sizeof(spsc_queue<timeval,capacity<1024> >))) spsc_queue<timeval,capacity<1024> >;
-	timeval tv;
+	timeval tv1,tv2;
+	long long a,b;
+	a = b = 0;
 	while (keepRunning)
 	{
-		gettimeofday(&tv,NULL);
-		sq->push(tv);
-		printf("Write %lds%ldus\n",tv.tv_sec,tv.tv_usec);
-		usleep(random()%1000000);
+		if (!sq->empty())
+			sq->pop(tv1);
+		else
+			continue;
+		gettimeofday(&tv2,NULL);
+		int tp = -((tv1.tv_sec - tv2.tv_sec)*1000000 + (tv1.tv_usec - tv2.tv_usec));
+		if (tp < 3000)
+		{
+			a += tp;
+			b ++;
+			printf("Timeval = %dus, average = %lldus\n",tp,a/b);
+		}
 	}
 }
-

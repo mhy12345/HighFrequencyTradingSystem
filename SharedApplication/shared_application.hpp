@@ -38,9 +38,14 @@ class SharedApplication
 			currentIndex = 0;
 		}
 		~SharedApplication(){
-			release_instance();
+			releaseInstance();
 		}
 		void* malloc(size_t s){
+			if (!info)
+			{
+				printf("Error not initialized???\n");
+				return NULL;
+			}
 			if (currentIndex + s > info->dataSize) {
 				printf("Data Buffer is full!\n");
 				return NULL;
@@ -49,7 +54,7 @@ class SharedApplication
 			currentIndex += s;
 			return ret;
 		}
-		void set_size(size_t s){
+		void setSize(size_t s){
 			if (info)
 			{
 				printf("Cannot set size after started!\n");
@@ -84,7 +89,7 @@ class SharedApplication
 			}
 			info->total += 1;
 		}
-		void release_instance() {
+		void releaseInstance() {
 			if (!info)
 				return ;
 			printf("Release instance...\n");
