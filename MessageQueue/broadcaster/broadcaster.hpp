@@ -3,19 +3,21 @@
 #include<atomic>
 #include <cstdlib>
 #include<cstdio>
-//template <typename T,int capacity>
-//class listener;
+
+template <typename T,int capacity> class listener;
 
 template <typename T,int capacity>
-class broadcaster
+class broadcaster//消息的生产者
 {
 	public:
 		int head;
 		struct node{
 			T data;
-			int flag;
+			int flag;//记录时间戳的地方，时间戳严格地址
 		}queue[capacity];
-		int timestamp;
+		int timestamp;//时间戳
+	//	template <typename T,int capacity> friend class listerner;
+		//TODO：没有成功的把brocaster设为listener的友元
 	public:
 		broadcaster()
 		{
@@ -23,7 +25,7 @@ class broadcaster
 			head = -1;
 			timestamp = 0;
 		}
-		inline bool push(const T &data)
+		inline bool push(const T &data)//生产者无法判断队列满
 		{
 			head++;
 			if (head == capacity)
@@ -42,7 +44,7 @@ class listener
 		broadcaster<T,capacity> *bc;
 		int head,timestamp;
 	public:
-		static int inner_size(){
+		static int inner_size(){//由于broadcaster是被listener包含的，所以为了申请broadcaster大小的共享内存，需要知道broadcaster的大小
 			return sizeof(broadcaster<T,capacity>);
 		}
 		listener(void* ptr)
@@ -50,7 +52,6 @@ class listener
 			bc=(broadcaster<T,capacity>*)ptr;
 			head = 0;
 			timestamp = 0;
-		   	//inner_size= sizeof(broadcaster<T,capacity>);
 		}
 		inline bool pop(T &data)
 		{
@@ -63,7 +64,7 @@ class listener
 				if (head == capacity)
 					head -= capacity;
 				return true;
-			}else if (timestamp + capacity < bc->timestamp)
+			}else if (timestamp + capacity < bc->timestamp)//如果producer太快了，已经多绕了一圈了，直接把中间的丢掉
 			{
 				head = bc->head;
 				timestamp = bc->timestamp-1;

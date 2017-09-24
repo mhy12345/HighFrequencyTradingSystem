@@ -39,10 +39,8 @@ int main()
 	long long a,b;
 	a = b = 0;
 	int total = 0;
-	int ttt = 0;
 	while (keepRunning)
 	{
-		ttt++;
 		if (!sq->pop(tv1))continue;
 		rec.push_back(make_pair(tv1.tv_sec,tv1.tv_nsec));
 		total ++;
