@@ -16,8 +16,8 @@ class broadcaster//消息的生产者
 			int flag;//记录时间戳的地方，时间戳严格地址
 		}queue[capacity];
 		int timestamp;//时间戳
-	//	template <typename T,int capacity> friend class listerner;
-		//TODO：没有成功的把brocaster设为listener的友元
+                friend class listener<T, capacity>;  // Will this work?
+		
 	public:
 		broadcaster()
 		{
